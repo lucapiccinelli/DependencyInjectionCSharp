@@ -32,6 +32,15 @@ namespace DependencyInjection.Tests
         }
 
         [Fact]
+        public void I_CanRegister_AnInterface()
+        {
+            DiContainer di = new DiContainer();
+            di.Register<IMyTestClass>(new MyTestClass1());
+
+            Assert.Equal(new MyTestClass1(), di.Get<IMyTestClass>());
+        }
+
+        [Fact]
         public void I_CanRegister_MoreThaOneType()
         {
             DiContainer di = new DiContainer();
@@ -46,18 +55,18 @@ namespace DependencyInjection.Tests
         public void I_CanRegister_NestedTypes()
         {
             DiContainer di = new DiContainer();
-            di.Register<InnerClass>();
+            di.Register<IInnerClass>(new InnerClass("x"));
             di.Register<OuterClass>();
 
-            Assert.Equal(new OuterClass(new InnerClass()), di.Get<OuterClass>());
+            Assert.Equal(new OuterClass(new InnerClass("x")), di.Get<OuterClass>());
         }
     }
 
     public class OuterClass
     {
-        private readonly InnerClass _innerClass;
+        private readonly IInnerClass _innerClass;
 
-        public OuterClass(InnerClass innerClass)
+        public OuterClass(IInnerClass innerClass)
         {
             _innerClass = innerClass;
         }
@@ -86,11 +95,19 @@ namespace DependencyInjection.Tests
         }
     }
 
-    public class InnerClass
+    public interface IInnerClass
+    {
+    }
+
+    public class InnerClass: IInnerClass
     {
         private readonly string _value;
 
-        public InnerClass(string value = "x")
+        public InnerClass(): this("x")
+        {
+        }
+
+        public InnerClass(string value)
         {
             _value = value;
         }
@@ -131,7 +148,7 @@ namespace DependencyInjection.Tests
         }
     }
 
-    public class MyTestClass1
+    public class MyTestClass1: IMyTestClass
     {
         private readonly string _value;
 
@@ -164,5 +181,9 @@ namespace DependencyInjection.Tests
         {
             return $"{nameof(_value)}: {_value}";
         }
+    }
+
+    public interface IMyTestClass
+    {
     }
 }
