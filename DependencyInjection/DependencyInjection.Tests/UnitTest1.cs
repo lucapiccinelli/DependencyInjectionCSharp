@@ -1,4 +1,5 @@
 using ClassLibrary1;
+using ClassLibrary1.Classes;
 using Xunit;
 
 namespace DependencyInjection.Tests
@@ -60,79 +61,14 @@ namespace DependencyInjection.Tests
 
             Assert.Equal(new OuterClass(new InnerClass("x")), di.Get<OuterClass>());
         }
-    }
 
-    public class OuterClass
-    {
-        private readonly IInnerClass _innerClass;
-
-        public OuterClass(IInnerClass innerClass)
+        [Fact]
+        public void I_CanRegister_With_AutoConfiguration()
         {
-            _innerClass = innerClass;
-        }
+            DiContainer di = new DiContainer();
+            di.AutoConfigure();
 
-        protected bool Equals(OuterClass other)
-        {
-            return Equals(_innerClass, other._innerClass);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((OuterClass) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return (_innerClass != null ? _innerClass.GetHashCode() : 0);
-        }
-
-        public override string ToString()
-        {
-            return $"{nameof(_innerClass)}: {_innerClass}";
-        }
-    }
-
-    public interface IInnerClass
-    {
-    }
-
-    public class InnerClass: IInnerClass
-    {
-        private readonly string _value;
-
-        public InnerClass(): this("x")
-        {
-        }
-
-        public InnerClass(string value)
-        {
-            _value = value;
-        }
-
-        protected bool Equals(InnerClass other)
-        {
-            return _value == other._value;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((InnerClass) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return (_value != null ? _value.GetHashCode() : 0);
-        }
-
-        public override string ToString()
-        {
-            return $"{nameof(_value)}: {_value}";
+            Assert.Equal(new OuterClass(new InnerClass("x")), di.Get<OuterClass>());
         }
     }
 
