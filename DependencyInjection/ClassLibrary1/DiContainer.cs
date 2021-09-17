@@ -35,15 +35,17 @@ namespace ClassLibrary1
             }
             else
             {
-                object[] parameters = constructors.First()
-                    .GetParameters()
-                    .Select(info => Get(info.ParameterType))
-                    .ToArray();
+                object[] parameters = GetParameters(constructors);
 
-                Register(iinterface,  Activator.CreateInstance(type, parameters));
+                Register(iinterface, Activator.CreateInstance(type, parameters));
             }
         }
 
+        private object[] GetParameters(ConstructorInfo[] constructors) => 
+            constructors.First()
+                .GetParameters()
+                .Select(info => Get(info.ParameterType))
+                .ToArray();
 
         public T Get<T>() => (T)Get(typeof(T));
 
